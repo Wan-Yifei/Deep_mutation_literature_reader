@@ -130,33 +130,44 @@ def write_download_log(pmid_checkdict, literature_folder):
             log_writer.writerow([pmid, status])
 
 def pmid_doi_summary(pmids_doi):
-    ''''''
+    '''
+    Summrize the count of PMIDs/DOIs.
+    :param pmids_doi: dict of pmids-doi, key -> pmid, value -> doi;
+    :return: None.
+    '''
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     print("Summary of PMID-DOI source file:\n")
     print("Total # pmids: {}".format(len(pmids_doi)))
     count_dois = set(pmids_doi.values())
     count_dois.remove("")
     print("Total # doi: {}".format(len(count_dois)))
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n")
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 
 def download_summary(pmid_checkdict):
+    '''
+    Summrize the status of download process.
+    :param pmid_checkdict: dict of pmid-status, key -> pmid, value -> status;
+    :return: None
+    '''
     status_set = set([status.lower() for status in pmid_checkdict.values()])
     status_list = list(pmid_checkdict.values())
-    print("\n")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print("Summary of literature status:\n")
     for status in status_set:
         print("Count # of {}: {}".format(status, status_list.count(status)))
+    print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n")
 
 def main():
     input_file_pmid = sys.argv[1]
     literature_folder = sys.argv[2]
     pmids_doi = read_pmid_doi(input_file_pmid)
     pmid_checkdict = liter_status_check(pmids_doi, literature_folder)
-    pmid_doi_summary(pmids_doi)
     try:
         down_literature(pmids_doi, pmid_checkdict, literature_folder)
     except:
         pass
     finally:
+        pmid_doi_summary(pmids_doi)
         download_summary(pmid_checkdict)
         write_download_log(pmid_checkdict, literature_folder)
 
