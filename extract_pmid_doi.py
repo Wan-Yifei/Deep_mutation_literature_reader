@@ -7,6 +7,7 @@ from Bio import Entrez  # Bio.Entrez at leagst v1.75 to enable auto rate limit
 def get_pmid(input_file):
     """
     Extract pmids from input table file.
+
     :param input_file: csv file has pmids in header;
     :return: a list of pmid.
     """
@@ -35,7 +36,7 @@ def get_pmid(input_file):
 def get_doi_api(pmids, email, tool_nm="get_doi_api", api_key="", max_tries=3, sleep_between_tries=15, pmids_limit=200):
     """
     Query DOI for each PMID.
-    :param pmids_limit:
+
     :param pmids: The list of all PMIDs;
     :param email: The e-mail addresss of user for NCBI API access;
     :param tool_nm: Tool name of the tool (current program) for NCBI API access;
@@ -43,6 +44,7 @@ def get_doi_api(pmids, email, tool_nm="get_doi_api", api_key="", max_tries=3, sl
             API key;
     :param max_tries: How many times failed requests will be automatically retried on error;
     :param sleep_between_tries: The delay, in seconds, before retrying a request on error;
+    :param pmids_limit: the limit of the number of PMIDs per each query;
     :return: pmids_doi: a dictionary with key -> PMID and value -> DOI..
     """
     pmids_split = [pmids[ind * pmids_limit: (ind + 1) * pmids_limit] for ind in
@@ -83,6 +85,7 @@ def output_pmid(pmids_doi, output_file):
     """
     Output all pmid-doi pairs to a CSV.
     Each pmid takes one row.
+
     :param pmids_doi: pmid-doi dictionary;
     :param output_file: path of output file;
     :return: None.

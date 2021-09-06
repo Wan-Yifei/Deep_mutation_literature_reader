@@ -9,6 +9,7 @@ from hmac_signature import generate_hmac_signature
 def get_pmid(input_file):
     """
     Extract pmids from input table file.
+
     :param input_file: csv file has pmids in header;
     :return: a list of pmid.
     """
@@ -36,6 +37,22 @@ def get_pmid(input_file):
 
 def fetch_title_abstract(pmids, email, tool_nm="fetch_abstract_api", api_key="", max_tries=3, sleep_between_tries=15,
                          pmids_limit=200):
+    """
+    Fetch title and abstract of each PMID. If PMID in the response does not match the PMID in the query would be record
+    as mismatch pmid.
+
+    :param pmids: The list of all PMIDs;
+    :param email: The e-mail addresss of user for NCBI API access;
+    :param tool_nm: Tool name of the tool (current program) for NCBI API access;
+    :param api_key: Personal API key from NCBI. If not set, 3 queries/second are allowed. 10 queries/second with a valid
+            API key;
+    :param max_tries: How many times failed requests will be automatically retried on error;
+    :param sleep_between_tries: The delay, in seconds, before retrying a request on error;
+    :param pmids_limit: the limit of the number of PMIDs per each query;
+    :return: pmids_abstract: dictionary key -> pmid, value -> abstract;
+    :return: pmids_title: dictionary key -> pmid, value -> title;
+    :return: mismatch_pmid: list of mismatch PMIDs.
+    """
     pmids_split = [pmids[ind * pmids_limit: (ind + 1) * pmids_limit] for ind in
                    range(math.ceil(len(pmids) / pmids_limit))]  # Every query has pmids_limits # pmids.
     pmids_abstract = {}
@@ -88,6 +105,13 @@ def fetch_title_abstract(pmids, email, tool_nm="fetch_abstract_api", api_key="",
 
 
 def abstract_status_check(pmids_abstract, mismatch_pmids):
+    """
+    Check status of abstract of each PMID.
+
+    :param pmids_abstract: dictionary key -> pmid, value -> abstract;
+    :param mismatch_pmids: list of mismatch PMIDs;
+    :return: abstract_status: dictionary key -> pmid, value -> status.
+    """
     abstract_status = {}
     for pmid in pmids_abstract.keys():
         if pmid in mismatch_pmids:
@@ -100,6 +124,13 @@ def abstract_status_check(pmids_abstract, mismatch_pmids):
 
 
 def title_status_check(pmids_title, mismatch_pmids):
+    """
+    Check status of title of each PMID.
+
+    :param pmids_title: dictionary key -> pmid, value -> title;
+    :param mismatch_pmids: list of mismatch PMIDs;
+    :return: title_status: dictionary key -> pmid, value -> status.
+    """
     title_status = {}
     for pmid in pmids_title.keys():
         if pmid in mismatch_pmids:
@@ -112,6 +143,13 @@ def title_status_check(pmids_title, mismatch_pmids):
 
 
 def summarize_status(dict_status, status_type):
+    """
+    Summrize and print out status check result of title or abstract.
+
+    :param dict_status: dictionary key -> pmid, value -> title or abstract;
+    :param status_type: specify the type of input dictionary, "abstract" or "title";
+    :return: None
+    """
     count_ok = 0
     count_mismatch = 0
     count_no_found = 0
@@ -144,6 +182,16 @@ def summarize_status(dict_status, status_type):
 
 
 def pickle_output(content, output_file, output_folder, key="", use_hmac=False):
+    """
+    Pickle content as bytes file to specified location.
+
+    :param content: object would be pickled;
+    :param output_file: output file name;
+    :param output_folder: output folder, would be the root of output path;
+    :param key: key for hash message authentication;
+    :param use_hmac: Apply hash message authentication to pickled file or not, True or False. False by default;
+    :return: None
+    """
     output_path = output_folder + "/" + output_file
     pickled_content = pickle.dumps(content)
     if use_hmac:
