@@ -26,6 +26,7 @@ def verify_hmac_signature(obj, key, signature_old):
     :return: verification: bool, True (verification pass) or False (verification failed).
     """
     signature_new = generate_hmac_signature(obj, key)
+    signature_old = signature_old.strip()  # remove potential \n, \r and so on.
     if hmac.compare_digest(signature_new, signature_old):
         verification = True
     else:
