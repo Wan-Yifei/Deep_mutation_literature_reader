@@ -13,7 +13,7 @@ default_var_pattern = {
                  r"GCTAgcta]+)",
         "inversion": r"[cCgG]\.(\d+|\*\d+|-\d+)([+-]\d+)?_(\d+|\*\d+|-\d+)([+-]\d+)?inv",
         "duplication": r"[cCgG]\.(\d+|\*\d+|-\d+)([+-]\d+)?(?:_(\d+|\*\d+|-\d+)([+-]\d+)?)?dup([GCTAgcta]+)?"
-    },
+    }
 }
 
 
