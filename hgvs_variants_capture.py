@@ -99,10 +99,11 @@ def replace_temp_encoding_2_var(key_2_placeholder, text, notice=False):
     for placeholder, var in placeholder_2_key.items():
         if notice:
             print("========================================")
-            print("Placeholder: {}\n".format(placeholder))
-            print("Variant: {}".format(var))
+            print("Placeholder: {}".format(placeholder))
+            print("Variant: {}\n".format(var))
             print("Original text:\n{}\n".format(text))
-        text = text.replace(placeholder, var)
+        pattern = r"{}\b".format(placeholder)
+        text = re.sub(pattern, var, text)
         if notice:
             print("Updated text:\n{}\n".format(text))
     return text
