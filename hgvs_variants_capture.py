@@ -83,7 +83,7 @@ def get_variant_entity_tmvar(text, ner):
     return recognized_entities
 
 
-def build_var_temp_encoding(recognized_entities, key_2_placeholder, placeholder_prefix="temp_placeholder_", notice=False):
+def build_var_temp_encoding(recognized_entities, key_2_placeholder, placeholder_prefix="placeholder", notice=False):
     """
     Map variant to placeholder (temporary encoding).
 
