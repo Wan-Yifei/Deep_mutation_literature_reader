@@ -1,5 +1,6 @@
 import re
 import sys
+from tmVar_rest_client import *
 
 default_var_pattern = {
     "dna": {
@@ -71,6 +72,13 @@ def recognize_variant_entity(variant_type, text, pattern=default_var_pattern):
 
 
 def get_variant_entity_tmvar(text, ner):
+    """
+    Use tmVar NER response as regex pattern to recognize variant entities.
+
+    :param text: raw text including variants;
+    :param ner: variant (name) entity recognizing;
+    :return: recognized_entities, dictionary tmvar_ind -> variant.
+    """
     assert (isinstance(ner, list)), "Please check your ner arguments."
     recognized_entities = {}  # store all match words
     n = 0
@@ -142,6 +150,29 @@ def replace_temp_encoding_2_var(key_2_placeholder, text, notice=False):
         if notice:
             print("Updated text:\n{}\n".format(text))
     return text
+
+
+def map_var_placeholder(pmid, text, vartype):
+    """
+    Use tmVar REST API and regex to recognize variant entities from text and replace them with placeholders.
+
+    :param pmid: PMID;
+    :param text: raw text with variant entities;
+    :param vartype: variant type of entities, e.g. dna;
+    :return: text, variants replaced with placeholders.
+    """
+    # tmVar method
+    soup = tmvar_rest_api(pmid, "mutation")
+    tmvar_ner = retrieve_variant_entity(soup)
+    tmvar_entities = get_variant_entity_tmvar(text, tmvar_ner)
+    key_2_placeholder_init = {}
+    key_2_placeholder_tmvar = build_var_temp_encoding(tmvar_entities, key_2_placeholder_init, notice=False)
+    tmvar_text = replace_var_2_temp_encoding(key_2_placeholder_tmvar, text, notice=False)
+    # conventional regex method
+    regex_entities = recognize_variant_entity(vartype, tmvar_text)  # conventional regex NER
+    key_2_placeholder = build_var_temp_encoding(regex_entities, key_2_placeholder_tmvar)
+    new_text = replace_var_2_temp_encoding(key_2_placeholder, tmvar_text)
+    return new_text
 
 
 def test(build_notice, key2pla_notice, pla2key_notice):
