@@ -16,6 +16,7 @@ def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sl
 
     :param pmid: string, PMID of the literature; :param concepts: support five kinds of bioconcepts, i.e., Gene,
     Disease, Chemical, Species, Mutation. When 'BioConcept' is used, all five are included.
+    :param concepts: request response content, one of Gene, Disease, Chemical, Species, Mutation;
     :param return_format: string, one of PubTator (tab-delimited text file), BioC (xml), and JSON;
     :param attempts_limit: int, How many times failed requests will be automatically retried on error, default by 3;
     :param sleep_between_tries: int, the delay, in seconds, before retrying a request on error;
