@@ -24,6 +24,7 @@ def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sl
     """
     tmvar_root = "https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/"
     url = tmvar_root + "{}?pmids={}&concepts={}".format(return_format, pmid, concepts)  # url of tmvar with query
+    soup = None
     print("Try to call tmVar API of PMID: {}".format(pmid))
     print("From URL: {}".format(url))
     attempts = 0
@@ -35,7 +36,8 @@ def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sl
             response = response.read()
             soup = BeautifulSoup(response, features="html.parser")
             break
-        except Exception:
+        except Exception as e:
+            print("Error: {}".format(e))
             print("Query tmVar for PMID: {} failed!!".format(pmid))
             print("Sleep {} seconds before retry!\n".format(sleep_between_tries))
             if attempts < attempts_limit:
@@ -68,6 +70,7 @@ def test_mutation(request_time=10):
         soup = tmvar_rest_api(pmid="24451227", concepts="mutation")
         entities = retrieve_variant_entity(soup)
         print("{}\n".format(entities))
+
 
 if __name__ == "__main__":
     test_mutation()
