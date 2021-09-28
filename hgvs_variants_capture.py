@@ -176,13 +176,16 @@ def map_var_placeholder(pmid, text, vartype):
     return new_text
 
 
-def variant_safe_punctuation_remover(pmid, text, vartype):
+def variant_safe_punctuation_remover(pmid, text, vartype, k2p_notice=False, tmtxt_notice=False, ntxt_notice=False):
     """
     Remove punctuation but keep variant entities.
 
     :param pmid: PMID;
     :param text: raw context with variants;
     :param vartype: which kind of variant type should be check by regex? e.g. dna;
+    :param k2p_notice: verbose notices of build_var_temp_encoding;
+    :param tmtxt_notice: verbose notices of replace_var_2_temp_encoding;
+    :param ntxt_notice: verbose notices of replace_temp_encoding_2_var;
     :return: new_text, removed punctuation text.
     """
     # tmVar method
@@ -190,14 +193,15 @@ def variant_safe_punctuation_remover(pmid, text, vartype):
     tmvar_ner = retrieve_variant_entity(soup)
     tmvar_entities = get_variant_entity_tmvar(text, tmvar_ner)
     key_2_placeholder_init = {}  # initialize a dict as the parameter of build_var_temp_encoding function
-    key_2_placeholder_tmvar = build_var_temp_encoding(tmvar_entities, key_2_placeholder_init, notice=False)
-    tmvar_text = replace_var_2_temp_encoding(key_2_placeholder_tmvar, text, notice=True)
+    key_2_placeholder_tmvar = build_var_temp_encoding(tmvar_entities, key_2_placeholder_init, notice=k2p_notice)
+    tmvar_text = replace_var_2_temp_encoding(key_2_placeholder_tmvar, text, notice=tmtxt_notice)
     # conventional regex method
     regex_entities = recognize_variant_entity(vartype, tmvar_text)  # conventional regex NER
     key_2_placeholder = build_var_temp_encoding(regex_entities, key_2_placeholder_tmvar)
     new_text = replace_var_2_temp_encoding(key_2_placeholder, tmvar_text)  # replace variants to placeholders
     new_text = remove_punctuation(new_text)  # remove punctuation from text having placeholders
-    new_text = replace_temp_encoding_2_var(key_2_placeholder, new_text, notice=False)  # replace placeholder to variant
+    # replace placeholder to variant
+    new_text = replace_temp_encoding_2_var(key_2_placeholder, new_text, notice=ntxt_notice)
     return new_text
 
 
@@ -217,7 +221,8 @@ def test(build_notice, key2pla_notice, pla2key_notice):
            "Don't forget inversion g.32361330_32361333inv and c.*77-10_*77-1inv. \n" \
            "Beside duplication, c.260_264+48dup."
     recognized_entities = recognize_variant_entity("dna", text)
-    key_2_placeholder = build_var_temp_encoding(recognized_entities, notice=build_notice)
+    key_2_placeholder_init = {}
+    key_2_placeholder = build_var_temp_encoding(recognized_entities, key_2_placeholder_init, notice=build_notice)
     new_text = replace_var_2_temp_encoding(key_2_placeholder, text, notice=key2pla_notice)
     replace_temp_encoding_2_var(key_2_placeholder, new_text, notice=pla2key_notice)
 
