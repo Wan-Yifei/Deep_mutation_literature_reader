@@ -1,6 +1,7 @@
 import re
 import sys
 from tmVar_rest_client import *
+from data_clean_toolkit import *
 
 default_var_pattern = {
     "dna": {
@@ -172,6 +173,31 @@ def map_var_placeholder(pmid, text, vartype):
     regex_entities = recognize_variant_entity(vartype, tmvar_text)  # conventional regex NER
     key_2_placeholder = build_var_temp_encoding(regex_entities, key_2_placeholder_tmvar)
     new_text = replace_var_2_temp_encoding(key_2_placeholder, tmvar_text)
+    return new_text
+
+
+def variant_safe_punctuation_remover(pmid, text, vartype):
+    """
+    Remove punctuation but keep variant entities.
+
+    :param pmid: PMID;
+    :param text: raw context with variants;
+    :param vartype: which kind of variant type should be check by regex? e.g. dna;
+    :return: new_text, removed punctuation text.
+    """
+    # tmVar method
+    soup = tmvar_rest_api(pmid, "mutation")
+    tmvar_ner = retrieve_variant_entity(soup)
+    tmvar_entities = get_variant_entity_tmvar(text, tmvar_ner)
+    key_2_placeholder_init = {}  # initialize a dict as the parameter of build_var_temp_encoding function
+    key_2_placeholder_tmvar = build_var_temp_encoding(tmvar_entities, key_2_placeholder_init, notice=False)
+    tmvar_text = replace_var_2_temp_encoding(key_2_placeholder_tmvar, text, notice=True)
+    # conventional regex method
+    regex_entities = recognize_variant_entity(vartype, tmvar_text)  # conventional regex NER
+    key_2_placeholder = build_var_temp_encoding(regex_entities, key_2_placeholder_tmvar)
+    new_text = replace_var_2_temp_encoding(key_2_placeholder, tmvar_text)  # replace variants to placeholders
+    new_text = remove_punctuation(new_text)  # remove punctuation from text having placeholders
+    new_text = replace_temp_encoding_2_var(key_2_placeholder, new_text, notice=False)  # replace placeholder to variant
     return new_text
 
 
