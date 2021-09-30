@@ -57,7 +57,7 @@ def main():
     model_path = os.environ["MODEL_LOCATION"]
     input_path = os.environ["RAW_CONTENT_PATH"]
     try:
-        hmac_key = os.environ["HMAC_kEY"]
+        hmac_key = os.environ["HMAC_KEY"]
     except Exception as e:
         print(e)
         print("Did not receive key of Hash message authentication.")
