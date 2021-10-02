@@ -1,4 +1,5 @@
 import os
+import sys
 import pickle
 import sent2vec
 from hmac_signature import *
@@ -54,6 +55,7 @@ def input_preprocess(input_content_path, key=None):
 
 
 def main():
+    output_file = sys.argv[1]
     model_path = os.environ["MODEL_LOCATION"]
     input_path = os.environ["RAW_CONTENT_PATH"]
     try:
@@ -63,15 +65,16 @@ def main():
         print("Did not receive key of Hash message authentication.")
         hmac_key = ""
     raw_content = input_preprocess(input_path, hmac_key)
-    sentences_vetors = {}
+    sentences_vectors_dict = {}
     model = load_model(model_path)
-    for pmid, sentences in raw_content.values():
-        print("\nEmbedding PMID: {}...".format(sentences))
-        sentences_vetors = embed_sentences(model, sentences)  # sentences is a list
-        sentences_vetors[pmid] = sentences_vetors
-    output_file = "embedded_pmid_text.pickle"
+    for pmid, sentences in raw_content.items():
+        if sentences[0]:
+            print("\nEmbedding PMID: {}...".format(sentences))
+            sentences_vectors = model.embed_sentences(sentences)  # sentences is a list
+            print("Vector of sentences: {}".format(sentences_vectors))
+            sentences_vectors_dict[pmid] = sentences_vectors
     output_folder = "."
-    pickle_output(sentences_vetors, output_file, output_folder, key="", use_hmac=False)
+    pickle_output(sentences_vectors_dict, output_file, output_folder, key="", use_hmac=False)
 
 
 if __name__ == '__main__':
