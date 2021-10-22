@@ -69,6 +69,7 @@ def main():
     model = load_model(model_path)
     for pmid, sentences in raw_content.items():
         if sentences[0]:
+            sentences = [sen for sen in sentences if sen]  # remove space from the list
             print("\nEmbedding PMID: {}...".format(sentences))
             sentences_vectors = model.embed_sentences(sentences)  # sentences is a list
             print("Vector of sentences: {}".format(sentences_vectors))
