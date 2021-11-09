@@ -13,7 +13,7 @@ def retrieve_pmid_title(input_file):
     return pmids_title
 
 
-def retrieve_pmid_label(input_file):
+def retrieve_pmid_source(input_file):
     with open(input_file, "r", encoding="utf-8") as csvfile:
         raw = csv.reader(csvfile)
         header = next(raw)
@@ -30,7 +30,7 @@ def retrieve_pmid_label(input_file):
 def main():
     input_file = sys.argv[1]
     pmid_title = retrieve_pmid_title(input_file)
-    pmid_source = retrieve_pmid_label(input_file)
+    pmid_source = retrieve_pmid_source(input_file)
 
 
 if __name__ == '__main__':
