@@ -32,10 +32,11 @@ def pickle_output(content, output_file, output_folder, key="", use_hmac=False):
 def pickle_load(pickle_path, hmac_key=None, use_hmac=False):
     """
     Load pickle file.
-    :param pickle_path:
-    :param hmac_key:
-    :param use_hmac:
-    :return:
+
+    :param pickle_path: string, the path of pickled file.
+    :param hmac_key: string, the key used by HASH signature.
+    :param use_hmac: bool, True/False.
+    :return: un-pickled content.
     """
     with open(pickle_path, "rb") as pickled_file:
         if use_hmac:
