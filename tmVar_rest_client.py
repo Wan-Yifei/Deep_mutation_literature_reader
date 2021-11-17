@@ -4,7 +4,7 @@ import urllib
 from urllib import request
 from bs4 import BeautifulSoup
 
-per_second_req_limits = 5  # request limits per period of API
+per_second_req_limits = 3  # request limits per period of API
 req_time_period = 1  # time period of API requests in seconds
 
 
