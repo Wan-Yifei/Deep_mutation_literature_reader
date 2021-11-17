@@ -4,26 +4,24 @@ import contractions
 from fetch_pmid_title_abstract import pickle_output
 from hgvs_variants_capture import *
 from data_clean_toolkit import *
-from hmac_signature import *
+from pickle_toolbox import *
 
 
 def main():
     input_title = sys.argv[1]
     input_abstract = sys.argv[2]
-    hmac_key = sys.argv[3]
-    output_folder = sys.argv[4]
-    with open(input_title, "rb") as title:
-        title_signature_old = title.readline().decode("utf-8")
-        title_content = b"".join(title.readlines())
-        if verify_hmac_signature(title_content, hmac_key, title_signature_old):
-            pmids_title = pickle.loads(title_content)
-            print("Dict pmids_title is ready!")
-    with open(input_abstract, "rb") as abstract:
-        abstract_signature_old = abstract.readline().decode("utf-8")
-        abstract_content = b"".join(abstract.readlines())
-        if verify_hmac_signature(abstract_content, hmac_key, abstract_signature_old):
-            pmids_abstract = pickle.loads(abstract_content)
-            print("Dict pmids_abstract is ready!")
+    output_folder = sys.argv[3]
+    try:
+        hmac_key = sys.argv[4]
+        use_hmac = True
+    except IndexError:
+        print("Notice: No HMAC key provided!!")
+        hmac_key = None
+        use_hmac = False
+    pmids_title = pickle_load(input_title, hmac_key, use_hmac)
+    print("Dict pmids_title is ready!")
+    pmids_abstract = pickle_load(input_abstract, hmac_key, use_hmac)
+    print("Dict pmids_abstract is ready!")
     # 1. Lower all cases
     pmids_title_l = {pmid: title.lower() for pmid, title in pmids_title.items()}
     pmids_abstract_l = {pmid: abstract.lower() for pmid, abstract in pmids_abstract.items()}
