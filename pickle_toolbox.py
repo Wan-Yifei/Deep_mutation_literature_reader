@@ -19,14 +19,15 @@ def pickle_output(content, output_file, output_folder, key="", use_hmac=False):
         hmac_header = generate_hmac_signature(pickled_content, key)
         print("Hash message signature: {}".format(hmac_header))
         hmac_header = hmac_header + "\n"  # concatenate HMAC signature to a new line
-    else:
-        hmac_header = None
-    with open(output_path, "w+") as output:
-        if hmac_header:
+        with open(output_path, "w+") as output:
             output.write(hmac_header)
-    with open(output_path, "ab") as output:
-        output.write(pickled_content)
-        print("\nPickled file to {}".format(output_path))
+        with open(output_path, "ab") as output:
+            output.write(pickled_content)
+            print("Pickled file to {}\n".format(output_path))
+    else:
+        with open(output_path, "wb") as output:
+            output.write(pickled_content)
+            print("Pickled file to {}\n".format(output_path))
 
 
 def pickle_load(pickle_path, hmac_key=None, use_hmac=False):
@@ -49,7 +50,7 @@ def pickle_load(pickle_path, hmac_key=None, use_hmac=False):
             unpickle_file = pickle.loads(content)
         else:
             try:
-                unpickle_file = pickle.loads(pickled_file)
+                unpickle_file = pickle.load(pickled_file)
             except Exception as e:
                 print("Does pickle file use HASH message authentication???\n")
                 raise e
