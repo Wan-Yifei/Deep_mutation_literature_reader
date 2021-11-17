@@ -1,9 +1,8 @@
 import csv
 import math
 import sys
-import pickle
 from Bio import Entrez
-from hmac_signature import generate_hmac_signature
+from pickle_toolbox import *
 
 
 def get_pmid(input_file):
@@ -33,6 +32,19 @@ def get_pmid(input_file):
                 line = ""
         pmids = list(set(pmids))  # remove duplicates
     return pmids
+
+
+def get_pickled_pmid(input_file, hmac_key, use_hmac):
+    if use_hmac:
+        pmids_raw = pickle_load(input_file, hmac_key=hmac_key, use_hmac=use_hmac)
+    else:
+        pmids_raw = pickle_load(input_file)
+    if isinstance(pmids_raw, list):
+        pmids = pmids_raw
+        return pmids
+    if isinstance(pmids_raw, dict):
+        pmids = [pmid for pmid in pmids_raw.keys()]
+        return pmids
 
 
 def fetch_title_abstract(pmids, email, tool_nm="fetch_abstract_api", api_key="", max_tries=3, sleep_between_tries=15,
@@ -220,7 +232,10 @@ def main():
         use_hmac = True  # When HMAC key is provided, use HMAC to sign pickled output.
     else:
         use_hmac = False
-    pmids = get_pmid(input_file)
+    if input_file.endswith("csv"):
+        pmids = get_pmid(input_file)
+    if input_file.endswith("pickle"):
+        pmids = get_pickled_pmid(input_file, hmac_key, use_hmac)
     pmids_abstract, pmids_title, mismatch_pmids = fetch_title_abstract(pmids, email)
     abstract_status = abstract_status_check(pmids_abstract, mismatch_pmids)
     title_status = title_status_check(pmids_title, mismatch_pmids)
