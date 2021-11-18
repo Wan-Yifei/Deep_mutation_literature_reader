@@ -38,17 +38,23 @@ def main():
     pmids_title_lcuhs = {pmid: remove_special_characters(title) for pmid, title in pmids_title_lcuh.items()}
     pmids_abstract_lcuhs = {pmid: remove_special_characters(abstract) for pmid, abstract in pmids_abstract_lcuh.items()}
     # 6. Sentence level tokenize
-    pmids_title_lcuhst = {pmid: title.split(". ") for pmid, title in pmids_title_lcuhs.items()}
-    pmids_abstract_lcuhst = {pmid: abstract.split(". ") for pmid, abstract in pmids_abstract_lcuhs.items()}
+    # pmids_title_lcuhst = {pmid: title.split(". ") for pmid, title in pmids_title_lcuhs.items()}
+    # pmids_abstract_lcuhst = {pmid: abstract.split(". ") for pmid, abstract in pmids_abstract_lcuhs.items()}
     # 7. Remove punctuations
     vartype = "dna"
-    pmids_title_lcuhstp = {pmid: [variant_safe_punctuation_remover(pmid, sen, vartype) for sen in title_sens] for
-                           pmid, title_sens in pmids_title_lcuhst.items()}
-    pmids_abstract_lcuhstp = {pmid: [variant_safe_punctuation_remover(pmid, sen, vartype) for sen in abstract_sens] for
-                              pmid, abstract_sens in pmids_abstract_lcuhst.items()}
+    # pmids_title_lcuhstp = {pmid: [variant_safe_punctuation_remover(pmid, sen, vartype) for sen in title_sens] for
+    #                       pmid, title_sens in pmids_title_lcuhst.items()}
+    # pmids_abstract_lcuhstp = {pmid: [variant_safe_punctuation_remover(pmid, sen, vartype) for sen in abstract_sens] for
+    #                          pmid, abstract_sens in pmids_abstract_lcuhst.items()}
+    pmids_title_lcuhsp = {pmid: variant_safe_punctuation_remover(pmid, title, vartype) for pmid, title in
+                          pmids_title_lcuhs.items()}
+    pmids_abstract_lcuhsp = {pmid: variant_safe_punctuation_remover(pmid, abstract, vartype) for
+                             pmid, abstract in pmids_abstract_lcuhs.items()}
     # 8. Output cleaned and tokenized text
-    pickle_output(pmids_title_lcuhstp, "cleaned_title.pickle", output_folder, key=hmac_key, use_hmac=True)
-    pickle_output(pmids_abstract_lcuhstp, "cleaned_abstract.pickle", output_folder, key=hmac_key, use_hmac=True)
+    # pickle_output(pmids_title_lcuhstp, "cleaned_title.pickle", output_folder, key=hmac_key, use_hmac=use_hmac)
+    # pickle_output(pmids_abstract_lcuhstp, "cleaned_abstract.pickle", output_folder, key=hmac_key, use_hmac=use_hmac)
+    pickle_output(pmids_title_lcuhsp, "cleaned_title.pickle", output_folder, key=hmac_key, use_hmac=use_hmac)
+    pickle_output(pmids_abstract_lcuhsp, "cleaned_abstract.pickle", output_folder, key=hmac_key, use_hmac=use_hmac)
 
 
 if __name__ == "__main__":
