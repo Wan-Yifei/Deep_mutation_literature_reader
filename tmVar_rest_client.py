@@ -31,13 +31,13 @@ def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sl
     while attempts < attempts_limit:
         try:
             attempts += 1
-            print("-----------------------------------------")
             print("Call tmVar attempt {}".format(attempts))
             response = urllib.request.urlopen(url)
             response = response.read()
             soup = BeautifulSoup(response, features="html.parser")
             attempts = attempts_limit + 1
             print("tmVar call for {} done!".format(pmid))
+            print("-----------------------------------------")
         except Exception as e:
             print("Error: {}".format(e))
             print("Query tmVar for PMID: {} failed!!".format(pmid))
