@@ -8,8 +8,8 @@ per_second_req_limits = 3  # request limits per period of API
 req_time_period = 1  # time period of API requests in seconds
 
 
-@ratelimit.sleep_and_retry  # Notice: sleep_and_retry decorator must be used before limits decorator.
-@ratelimit.limits(calls=per_second_req_limits, period=req_time_period)
+#@ratelimit.sleep_and_retry  # Notice: sleep_and_retry decorator must be used before limits decorator.
+#@ratelimit.limits(calls=per_second_req_limits, period=req_time_period)
 def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sleep_between_tries=60):
     """
     Call tmVar REST API to recognize variants from abstract of specified PMID.
@@ -31,11 +31,13 @@ def tmvar_rest_api(pmid, concepts, return_format="biocxml", attempts_limit=3, sl
     while attempts < attempts_limit:
         try:
             attempts += 1
+            print("-----------------------------------------")
             print("Call tmVar attempt {}".format(attempts))
             response = urllib.request.urlopen(url)
             response = response.read()
             soup = BeautifulSoup(response, features="html.parser")
-            break
+            attempts = attempts_limit + 1
+            print("tmVar call for {} done!".format(pmid))
         except Exception as e:
             print("Error: {}".format(e))
             print("Query tmVar for PMID: {} failed!!".format(pmid))
