@@ -58,12 +58,17 @@ def word_tokenize(sentences_list):
     """
     Tokenize raw sentences for each pmid.
 
-    :param sentences_list: sentences in a list;
+    :param sentences_list: sentences in a list or just a string;
     :return: tokenized words in a list.
     """
-    new_list = " ".join(sentences_list)
-    word_token = new_list.split(" ")
-    word_token = [word for word in word_token if word]  # remove space from list
+    if isinstance(sentences_list, list):
+        new_list = " ".join(sentences_list)
+        word_token = new_list.split(" ")
+        word_token = [word for word in word_token if word]  # remove space from list
+    else:
+        word_token = sentences_list.split(" ")
+        word_token = [word for word in word_token if word]  # remove space from list
+
     return word_token
 
 
@@ -80,13 +85,29 @@ def main():
     raw_content = input_preprocess(input_path, hmac_key)
     words_vectors_dict = {}
     model = load_model(model_path)
+    n = 0
     for pmid, sentences in raw_content.items():
-        if sentences[0]:
-            print("\n1. Tokenize sentences of PMID: {}".format(pmid))
-            word_token = word_tokenize(sentences)
-            print("\n2. Embedding PMID: {}...".format(pmid))
-            word_vectors = embed_words(model, word_token)  # word_token is a list
-            words_vectors_dict[pmid] = word_vectors
+        if isinstance(sentences, list):
+            if sentences[0]:
+                n += 1
+                print("\n{}-1. Tokenize sentences of PMID: {}".format(n, pmid))
+                word_token = word_tokenize(sentences)
+                print("{}\n".format(word_token))
+                print("\n{}-2. Embedding PMID: {}...".format(n, pmid))
+                word_vectors = embed_words(model, word_token)  # word_token is a list
+                assert len(word_token) == len(word_vectors), "Length doesn't match."
+                words_vectors_dict[pmid] = word_vectors
+        else:
+            if sentences:
+                n += 1
+                print("\n{}-1. Tokenize sentences of PMID: {}".format(n, pmid))
+                word_token = word_tokenize(sentences)
+                print("{}\n".format(word_token))
+                print("\n{}-2. Embedding PMID: {}...".format(n, pmid))
+                word_vectors = embed_words(model, word_token)  # word_token is a list
+                assert len(word_token) == len(word_vectors), "Length doesn't match."
+                words_vectors_dict[pmid] = word_vectors
+
     output_folder = "."
     pickle_output(words_vectors_dict, output_file, output_folder, key="", use_hmac=False)
 
