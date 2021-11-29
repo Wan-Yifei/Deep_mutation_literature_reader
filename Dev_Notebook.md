@@ -94,6 +94,10 @@ paper from Pubmed directly?
 + integrate NER tool tmVar to extract variant from literature\
 https://www.ncbi.nlm.nih.gov/research/pubtator-api/publications/export/biocxml?pmids=24451227&concepts=mutation
   
+8. Baseline model
+
+Average pool model.
+  
 ## Test cmd
 
 + Extract PMID-DOI
